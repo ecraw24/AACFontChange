@@ -3,15 +3,35 @@
       <title>success</title>
    </head>
    <body>
-      <p>File uploaded successfully and convert to a database file</p>
+      <p>File uploaded successfully and converted to a database file</p>
       <p>File Name: {{name}}</p>
-      <p>Table List</p>
-      <table>
-        <tbody>
-            {% for item in table %}
-            <tr><td>{{ item }}</td></tr>
-            {% endfor %}
-        </tbody>
-      </table>
+        <form action="{{ url_for('index') }}">  
+            <input type = "submit" value="Upload a new file">  
+        </form> 
+        <form action = "/fontChange" method="post">  
+            <label>Select the font to change FROM: </label>
+            <select name="fontFrom" >
+                <option></option>
+                {% for item in fonts %}
+                <option>{{ item }}</option>
+                {% endfor %}
+            </select><br><br>
+            <label>Select the font to change TO: </label>
+            <select name="fontTo">
+                <option></option>
+                {% for item in fonts %}
+                <option>{{ item }}</option>
+                {% endfor %}
+            </select><br><br>
+            <input type = "submit" value="Change fonts"><br>
+        </form>
+        <!-- <p>Table List</p>
+        <table>
+            <tbody>
+                {% for item in table %}
+                    <tr><td>{{ item }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table> -->
    </body>
 </html>
