@@ -6,8 +6,12 @@
       <p>File uploaded successfully and convert to a database file</p>
       <p>File Name: {{name}}</p>
       <p>Table List</p>
-      <div>
-        {{tableList}}
-      </div>
+      <table>
+        <tbody>
+            {% for item in table %}
+            <tr><td>{{ item }}</td></tr>
+            {% endfor %}
+        </tbody>
+      </table>
    </body>
 </html>

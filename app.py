@@ -17,9 +17,9 @@ def index():
 def success():  
     if request.method == 'POST':  
         f = request.files['file']
-        dbFilePath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
-        f.save(dbFilePath) 
-        Unzip.extractDB(dbFilePath)
+        FilePath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+        f.save(FilePath) 
+        dbFilePath = Unzip.extractDB(FilePath)
         tableList = sql.printTables(dbFilePath)
         return render_template("uploadSuccess.html", name = f.filename, table=tableList)  
 
