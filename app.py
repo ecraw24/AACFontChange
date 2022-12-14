@@ -4,6 +4,7 @@ from flask import *
 import os
 from werkzeug.utils import secure_filename
 import Unzip
+import sql
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'Uploads/'
@@ -16,9 +17,11 @@ def index():
 def success():  
     if request.method == 'POST':  
         f = request.files['file']
-        f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))) 
-        Unzip.extractDB(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-        return render_template("uploadSuccess.html", name = f.filename)  
+        dbFilePath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
+        f.save(dbFilePath) 
+        Unzip.extractDB(dbFilePath)
+        tableList = sql.printTables(dbFilePath)
+        return render_template("uploadSuccess.html", name = f.filename, table=tableList)  
 
 if __name__ == "__main__":
   app.run()
