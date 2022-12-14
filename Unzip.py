@@ -12,17 +12,14 @@ def extractDB(inputFilePath):
         extractedc4v = [zip_ref.extract(file, 'extractedDBs/') for file in zip_ref.namelist() if file.endswith('.c4v')]
         zip_ref.close()
     os.remove(zipFile)
-    print(extractedc4v)
     for inputFilePath in extractedc4v:
         base = os.path.splitext(inputFilePath)[0]
         newName = inputFilePath + '- NewUnzip' + '.c4v'
         shutil.copy(inputFilePath, newName)
-        os.rename(newName, base + '.db')
+        os.rename(newName, 'extractedDBs\\temp.db')
         os.remove(inputFilePath)
-    dbFilePath = base + '.db'
+    dbFilePath = 'extractedDBs\\temp.db'
+    print(base)
     print(dbFilePath)
     return dbFilePath
-
-
-
 

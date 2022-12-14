@@ -53,12 +53,12 @@ def success():
 @app.route('/fontChange', methods = ['POST', 'GET'])
 def fontChange():
   if request.method == 'POST':
-    sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], 'extractedDBs\WordPower60 SS_Copy.db')
+    sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], 'extractedDBs\\temp.db')
     return render_template("downloadFile.html")
 
 @app.route('/download')
 def download():
-    path = 'extractedDBs\WordPower60 SS_Copy.db'
+    path = 'extractedDBs\\temp.db'
     return send_file(path, as_attachment=True)   
 
 if __name__ == "__main__":
