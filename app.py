@@ -56,7 +56,6 @@ def fontChange():
   if request.method == 'POST':
     try:
       sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], dbFilePath)
-      Unzip.rezipDB(dbFilePath, 'TestFile.zip', tmpdirname.name)
     except:
       print('try failed')
       tmpdirname.cleanup()
@@ -64,12 +63,15 @@ def fontChange():
 
 @app.route('/download')
 def download():
-    try:
-      return send_file(dbFilePath, as_attachment=True)   
-    except:
-      print('try failed')
-      tmpdirname.cleanup()
-      return render_template('index.html')
+    #try:
+      print('try started')
+      newZipPath = Unzip.rezipDB(dbFilePath, os.path.join(tmpdirname.name, 'TestFile.zip'), tmpdirname.name)
+      print('new zip path: ' + newZipPath)
+      return send_file(newZipPath, as_attachment=True)   
+    #except:
+      #print('try failed')
+      #tmpdirname.cleanup()
+    #return render_template('index.html')
 
 if __name__ == "__main__":
   app.run()
