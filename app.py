@@ -12,7 +12,7 @@ app = Flask(__name__)
 fonts = ['Amaranth', 'Arial', 'Caudex', 'Courier New', 'Frutiger Linotype', 'Gentium Basic', 'Georgia', 'Istok Web', 
                 'Josefin Sans', 'Puritan', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Ubuntu', 'Verdana']
 tmpdirname = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=os.getcwd())
-dbFilePath = tmpdirname.name + '\\' + 'temp.db'
+dbFilePath = tmpdirname.name + '\\temp.db'
 
 
 @app.route('/', methods=['POST', 'GET'])
@@ -44,9 +44,8 @@ def success():
           f.save(FilePath) 
           Unzip.extractDB(FilePath, tmpdirname.name)
           tableList = sql.printTables(dbFilePath)
-          print('try successful')
         except:
-          print('try failed')
+          print('extract failed')
           tmpdirname.cleanup()
         
         return render_template("uploadSuccess.html", table=tableList, fonts=fonts, complete='')  
@@ -55,7 +54,8 @@ def success():
 def fontChange():
   if request.method == 'POST':
     try:
-      sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], dbFilePath)
+      print('directory for temp.db: ' + tmpdirname.name)
+      sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
     except:
       print('try failed')
       tmpdirname.cleanup()
@@ -63,15 +63,14 @@ def fontChange():
 
 @app.route('/download')
 def download():
-    #try:
-      print('try started')
-      newZipPath = Unzip.rezipDB(dbFilePath, os.path.join(tmpdirname.name, 'TestFile.zip'), tmpdirname.name)
-      print('new zip path: ' + newZipPath)
-      return send_file(newZipPath, as_attachment=True)   
-    #except:
-      #print('try failed')
-      #tmpdirname.cleanup()
-    #return render_template('index.html')
+    try:
+      zipFilePath = [os.path.join(tmpdirname.name, file) for file in os.listdir(tmpdirname.name) if file.endswith('.zip')]
+      newCEPath = Unzip.rezipDB(dbFilePath, zipFilePath[0], tmpdirname.name)
+      return send_file(newCEPath, as_attachment=True)   
+    except:
+      print('rezip or download failed')
+      tmpdirname.cleanup()
+    return render_template('index.html')
 
 if __name__ == "__main__":
   app.run()
