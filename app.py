@@ -5,28 +5,20 @@ import os
 from werkzeug.utils import secure_filename
 import Unzip
 import sql
-import shutil 
+import shutil
+import tempfile 
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'Uploads/'
-HTTP_METHODS = ['GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'CONNECT', 'OPTIONS', 'TRACE', 'PATCH']
 fonts = ['Amaranth', 'Arial', 'Caudex', 'Courier New', 'Frutiger Linotype', 'Gentium Basic', 'Georgia', 'Istok Web', 
                 'Josefin Sans', 'Puritan', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Ubuntu', 'Verdana']
+tmpdirname = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=os.getcwd())
+dbFilePath = tmpdirname.name + '\\' + 'temp.db'
 
-@app.route('/', methods=['GET'])
+
+@app.route('/', methods=['POST', 'GET'])
 def index():
-    #if request.method == 'GET':
-    folder = 'extractedDBs' 
-    for filename in os.listdir(folder):
-      file_path = os.path.join(folder, filename)
-      try:
-        if os.path.isfile(file_path) or os.path.islink(file_path):
-            os.unlink(file_path)
-        elif os.path.isdir(file_path):
-            shutil.rmtree(file_path)
-      except Exception as e:
-        print('Failed to delete %s. Reason: %s' % (file_path, e))
-    folder = 'Uploads' 
+    #clear tmp folder
+    folder = tmpdirname.name 
     for filename in os.listdir(folder):
       file_path = os.path.join(folder, filename)
       try:
@@ -42,24 +34,42 @@ def index():
 @app.route('/success', methods = ['POST'])  
 def success():  
     if request.method == 'POST':  
-        f = request.files['file']
-        FilePath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename))
-        f.save(FilePath) 
-        dbFilePath = Unzip.extractDB(FilePath)
-        tableList = sql.printTables(dbFilePath)
         
-        return render_template("uploadSuccess.html", name = dbFilePath, table=tableList, fonts=fonts, complete='')  
+        #get file and create tmp dir
+        f = request.files['file']
+        
+        #save file to directory and extract; if not, cleanup temp folder
+        try: 
+          FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
+          f.save(FilePath) 
+          Unzip.extractDB(FilePath, tmpdirname.name)
+          tableList = sql.printTables(dbFilePath)
+          print('try successful')
+        except:
+          print('try failed')
+          tmpdirname.cleanup()
+        
+        return render_template("uploadSuccess.html", table=tableList, fonts=fonts, complete='')  
 
 @app.route('/fontChange', methods = ['POST', 'GET'])
 def fontChange():
   if request.method == 'POST':
-    sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], 'extractedDBs\\temp.db')
+    try:
+      sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], dbFilePath)
+      Unzip.rezipDB(dbFilePath, 'TestFile.zip', tmpdirname.name)
+    except:
+      print('try failed')
+      tmpdirname.cleanup()
     return render_template("downloadFile.html")
 
 @app.route('/download')
 def download():
-    path = 'extractedDBs\\temp.db'
-    return send_file(path, as_attachment=True)   
+    try:
+      return send_file(dbFilePath, as_attachment=True)   
+    except:
+      print('try failed')
+      tmpdirname.cleanup()
+      return render_template('index.html')
 
 if __name__ == "__main__":
   app.run()
