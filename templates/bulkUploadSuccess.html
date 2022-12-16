@@ -1,0 +1,14 @@
+<html>
+   <head>
+      <title>success</title>
+   </head>
+   <body>
+      <p>File uploaded successfully and converted to a database file</p>
+        <form action="{{ url_for('index') }}">  
+            <input type = "submit" value="Return to Home">  
+        </form> 
+        <form action = "/fontChange" method="post">  
+            <input type = "submit" value="Change fonts"><br>
+        </form>
+   </body>
+</html>

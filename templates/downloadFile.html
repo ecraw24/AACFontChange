@@ -4,9 +4,11 @@
    </head>
    <body>
         <label><i>{{complete}}</i></label><br>  
-        <a href="{{url_for('download')}}" ><button>Download</button></a><br><br>
+        <form action="{{url_for('download')}}">  
+            <input type = "submit" name="fontChange" value="Download">  
+        </form> 
         <form action="{{ url_for('index') }}">  
-            <input type = "submit" value="Upload a new file">  
+            <input type = "submit" value="Return to Home">  
         </form> 
     </body>
 </html>
