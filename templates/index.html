@@ -2,17 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Vocabulary</title>
+    <title>Home</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <h1>Take down the AAC Capitalists</h1>
-    <hr>
-    <p>{{alert}}</p>
-    <form action = "/fontHome" method = "post" enctype="multipart/form-data">  
-        <input type = "submit" value="Change Fonts">  
-    </form><br> 
-    <form action = "/bulkEditHome" method = "post" enctype="multipart/form-data">  
-        <input type = "submit" value="Bulk Edit">  
-    </form>
+    <div class="header">
+        <h1>Take down the AAC Capitalists</h1>
+        <hr>
+    </div>
+    <div class="button_container">
+        <p><i>{{alert}}</i></p>
+        <form action = "/fontHome" method = "post" enctype="multipart/form-data">  
+            <input class = "button-25" type = "submit" value="Change Fonts">  
+        </form><br> 
+        <form action = "/bulkEdit" method = "post" enctype="multipart/form-data">  
+            <input class = "button-25" type = "submit" value="Bulk Edit">  
+        </form>
+    </div>
 </body>
 </html>

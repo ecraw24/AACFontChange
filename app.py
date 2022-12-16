@@ -3,12 +3,10 @@ from fileinput import filename
 from flask import * 
 import os
 from werkzeug.utils import secure_filename
-import Unzip
-import sql
+from Scripts import file_manipulator, sql
 import shutil
 import tempfile 
 import atexit
-
 
 app = Flask(__name__)
 
@@ -19,7 +17,7 @@ tmpdirname = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=os.getcwd
 dbFilePath = tmpdirname.name + '\\temp.db'
 
 def clearTmpFolder(tmpFolder):
-      #clear tmp folder
+    #clear tmp folder
   folder = tmpFolder
   for filename in os.listdir(folder):
     file_path = os.path.join(folder, filename)
@@ -31,11 +29,12 @@ def clearTmpFolder(tmpFolder):
     except Exception as e:
       print('Failed to delete %s. Reason: %s' % (file_path, e))
 
+### START ROUTES ###
+
 @app.route('/')
 def index():
   clearTmpFolder(tmpdirname.name)
   return render_template('index.html')
-
 
 @app.route('/fontHome', methods=['POST', 'GET'])
 def fontHome():
@@ -48,18 +47,16 @@ def success():
         
         #get file and create tmp dir
         f = request.files['file']
-        
         #save file to directory and extract; if not, cleanup temp folder
         try: 
           FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
           f.save(FilePath) 
-          Unzip.extractDB(FilePath, tmpdirname.name)
-          tableList = sql.printTables(dbFilePath)
+          file_manipulator.extractDB(FilePath, tmpdirname.name)
         except:
           print('extract failed')
           clearTmpFolder(tmpdirname.name)
         
-        return render_template("uploadSuccess.html", table=tableList, fonts=fonts, complete='')  
+        return render_template("uploadSuccess.html", fonts=fonts, complete='')  
 
 @app.route('/fontChange', methods = ['POST', 'GET'])
 def fontChange():
@@ -70,13 +67,10 @@ def fontChange():
     except:
       print('try failed')
       clearTmpFolder(tmpdirname.name)
-
     return render_template("downloadFile.html")
 
-@app.route('/download', methods=['POST'])
+@app.route('/download', methods=['POST', 'GET'])
 def download():
-  
-  alert = ''
   source = list(request.form.keys())[0] #export, import, or font change
  
   if source == 'Export':  
@@ -86,15 +80,12 @@ def download():
     try: 
       FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
       f.save(FilePath) 
-      Unzip.extractDB(FilePath, tmpdirname.name)
+      file_manipulator.extractDB(FilePath, tmpdirname.name)
       csvPath = sql.getExport(tmpdirname.name)
-      alert='csv export complete'
       return send_file(csvPath, as_attachment=True)  
-       
     except:
       print('extract failed')
       clearTmpFolder(tmpdirname.name)
-
   
   if source == 'Import':  
     #get file and create tmp dir
@@ -105,10 +96,9 @@ def download():
       f.save(FilePath) 
       sql.importCSV(FilePath, tmpdirname.name)
       zipFilePath = [os.path.join(tmpdirname.name, file) for file in os.listdir(tmpdirname.name) if file.endswith('.zip')]
-      newCEPath = Unzip.rezipDB(dbFilePath, zipFilePath[0], tmpdirname.name)
+      newCEPath = file_manipulator.rezipDB(dbFilePath, zipFilePath[0], tmpdirname.name)
       alert='csv import complete'
       return send_file(newCEPath, as_attachment=True) 
-
     except:
       print('import failed')
       clearTmpFolder(tmpdirname.name)
@@ -116,16 +106,17 @@ def download():
   if source == 'fontChange':  
     try:
       zipFilePath = [os.path.join(tmpdirname.name, file) for file in os.listdir(tmpdirname.name) if file.endswith('.zip')]
-      newCEPath = Unzip.rezipDB(dbFilePath, zipFilePath[0], tmpdirname.name)
+      newCEPath = file_manipulator.rezipDB(dbFilePath, zipFilePath[0], tmpdirname.name)
       alert='font change complete'
       return send_file(newCEPath, as_attachment=True)   
     except:
       print('rezip or download failed')
       clearTmpFolder(tmpdirname.name)
   
+  alert='error: you fucked up'
   return render_template('index.html', alert=alert)
 
-@app.route('/bulkEditHome', methods = ['POST', 'GET'])
+@app.route('/bulkEdit', methods = ['POST', 'GET'])
 def bulkEditHome():
   clearTmpFolder(tmpdirname.name)
   return render_template('bulkEditHome.html')
@@ -141,12 +132,14 @@ def bulkUploadSuccess():
         try: 
           FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
           f.save(FilePath) 
-          Unzip.extractDB(FilePath, tmpdirname.name)
+          file_manipulator.extractDB(FilePath, tmpdirname.name)
         except:
           print('extract failed')
           clearTmpFolder(tmpdirname.name)
         
         return render_template("uploadSuccess.html", fonts=fonts, complete='')
+
+### END ROUTES ###
 
 def OnExitApp():
     tmpdirname.cleanup()

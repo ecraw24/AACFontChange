@@ -3,18 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <title>Bulk Edit</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
-<body>
-    <h1>Change Your Fucking Vocabulary, Bitch</h1>
-    <hr>
-    <form action = "/download" method = "post" enctype="multipart/form-data">  
-        <input type="file" name="file" value="Upload *.ce File"/><br><br>  
-        <input type = "submit" name = "Export" value="Export a spreadsheet to edit vocabulary"> 
-        <hr>  
-    </form>
-    <form action = "/download" method = "post" enctype="multipart/form-data" >  
-        <input type="file" name="file" value="Upload *.csv File"/><br><br>  
-        <input type = "submit" name = "Import" value="Import a spreadsheet and convert to .ce"><br>
-    </form>  
-</body>
+    <body>
+        <div class="header">
+            <h1>Take down the AAC Capitalists</h1>
+            <hr>
+        </div>
+        <h2>Change Your Fucking Vocabulary, Bitch</h2>
+        <div class="button_container">
+            <h3>Upload a *.ce file</h3>
+            <form action = "/download" method = "post" enctype="multipart/form-data">  
+                <div class="left">
+                    <input type="file" name="file" value="Upload *.ce File"/><br><br> 
+                    <input class = "button-25" type = "submit" name = "Export" value="Download *.csv spreadsheet"> 
+                </div>        
+            </form>
+        </div>
+        <div class="button_container">
+            <h3>Upload a *.csv spreadsheet</h3>
+            <form action = "/download" method = "post" enctype="multipart/form-data" >  
+                <div class="left">
+                    <input type="file" name="file" value="Upload *.csv File"/><br><br>  
+                    <input class = "button-25" type = "submit" name = "Import" value="Download *.ce file">
+                </div>
+            </form> 
+        </div>
+        <div class="return_home">
+            <form action="{{ url_for('index') }}">  
+                <input class = "button-25" type = "submit" value="Return to Home">  
+            </form> 
+        </div>
+    </body>
 </html>
