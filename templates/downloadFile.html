@@ -1,14 +1,17 @@
 <html>
    <head>
       <title>download file</title>
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
    </head>
    <body>
         <div class="header">
             <h1>Take down the AAC Capitalists</h1>
             <hr>
         </div>   
+         <h2>Change Your Fucking Fonts, Bitch</h2>
+
         <div class = button_container>
-            <h4>File uploaded successfully</h4><br> 
+            <h4>Fonts changed successfully</h4><br> 
             <form action="{{url_for('download')}}" method="post">  
                 <input class="button-25" type = "submit" name="fontChange" value="Download *.ce file">  
             </form> 
