@@ -13,11 +13,10 @@ app = Flask(__name__)
 #global variables
 fonts = ['Amaranth', 'Arial', 'Caudex', 'Courier New', 'Frutiger Linotype', 'Gentium Basic', 'Georgia', 'Istok Web', 
                 'Josefin Sans', 'Puritan', 'Tahoma', 'Times New Roman', 'Trebuchet MS', 'Ubuntu', 'Verdana']
-tmpdirname = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=os.getcwd())
+tmpdirname = tempfile.TemporaryDirectory(suffix=None, prefix=None, dir=os.getcwd()) #change to dir in pythonAnywhere
 dbFilePath = tmpdirname.name + '\\temp.db'
 
 def clearTmpFolder(tmpFolder):
-    #clear tmp folder
   folder = tmpFolder
   for filename in os.listdir(folder):
     file_path = os.path.join(folder, filename)
@@ -60,20 +59,26 @@ def success():
 
 @app.route('/fontChange', methods = ['POST', 'GET'])
 def fontChange():
+  source = list(request.form.keys())[0] #export, import, or font change
+  
   if request.method == 'POST':
     try:
       print('directory for temp.db: ' + tmpdirname.name)
-      sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
+      if source == 'fontChange':
+        sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
+      if source == 'fontSizeChange':
+        sql.changeFontSize(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
     except:
-      print('try failed')
+      print('font change failed')
       clearTmpFolder(tmpdirname.name)
     return render_template("downloadFile.html")
 
 @app.route('/download', methods=['POST', 'GET'])
 def download():
   source = list(request.form.keys())[0] #export, import, or font change
+  print('source: ', list(request.form.keys()))
  
-  if source == 'Export':  
+  if source == 'UploadCEForPages':
     #get file and create tmp dir
     f = request.files['file']
     #save file to directory and extract; if not, cleanup temp folder
@@ -81,7 +86,14 @@ def download():
       FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
       f.save(FilePath) 
       file_manipulator.extractDB(FilePath, tmpdirname.name)
-      csvPath = sql.getExport(tmpdirname.name)
+      pages = sql.getPages(tmpdirname.name)
+      return render_template('bulkEditHome.html', pages=pages, alert='Upload successful!')
+    except:
+      print('error in uploadCEForPages')
+
+  if ('Export' in list(request.form.keys())):  
+    try: 
+      csvPath = sql.getExport(tmpdirname.name, request.form['page'] )
       return send_file(csvPath, as_attachment=True)  
     except:
       print('extract failed')
@@ -129,13 +141,13 @@ def bulkUploadSuccess():
         f = request.files['file']
         
         #save file to directory and extract; if not, cleanup temp folder
-        try: 
-          FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
-          f.save(FilePath) 
-          file_manipulator.extractDB(FilePath, tmpdirname.name)
-        except:
-          print('extract failed')
-          clearTmpFolder(tmpdirname.name)
+        #try: 
+        FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
+        f.save(FilePath) 
+        file_manipulator.extractDB(FilePath, tmpdirname.name)
+        #except:
+          #print('extract failed')
+          #clearTmpFolder(tmpdirname.name)
         
         return render_template("uploadSuccess.html", fonts=fonts, complete='')
 
