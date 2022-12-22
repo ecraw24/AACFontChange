@@ -62,10 +62,16 @@ def success():
 
 @app.route('/fontChange', methods = ['POST', 'GET'])
 def fontChange():
+  source = list(request.form.keys())[2] #export, import, or font change
+  print('source: ', source)
+
   if request.method == 'POST':
     try:
       print('directory for temp.db: ' + tmpdirname.name)
-      sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
+      if source == 'fontChange':
+        sql.changeFonts(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
+      if source == 'fontSizeChange':
+        sql.changeFontSize(request.form['fontFrom'], request.form['fontTo'], tmpdirname.name)
     except:
       print('try failed')
       clearTmpFolder(tmpdirname.name)

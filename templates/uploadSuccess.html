@@ -11,9 +11,9 @@
         <h2>Change Your Fucking Fonts, Bitch</h2>
 
         <div class = button_container>
-            <h4>File uploaded successfully</h4><br> 
+            <h4>File uploaded successfully</h4><br>
             <div class="right">
-                <form action = "/fontChange" method="post">  
+                <form action = "/fontChange" method="post">
                     <label>Select the font to change FROM: </label>
                     <select name="fontFrom" >
                         <option></option>
@@ -32,10 +32,21 @@
                 </form>
             </div>
         </div>
+        <div class = button_container>
+            <div class="right">
+                <form action = "/fontChange" method="post">
+                    <label for="fontFrom">Select the font size to change FROM: </label>
+                    <input type="number" name="fontFrom" min="6" max="60" step="1"><br><br>
+                    <label for="fontTo">Select the font size to change TO: </label>
+                    <input type="number" name="fontTo" min="6" max="60" step="1"><br><br>
+                    <input class="button-25" type = "submit" name = "fontSizeChange" value="Change font size">
+                </form>
+            </div>
+        </div>
         <div class="return_home">
-            <form action="{{ url_for('index') }}">  
-                <input class = "button-25" type = "submit" value="Return to Home">  
-            </form> 
+            <form action="{{ url_for('index') }}">
+                <input class = "button-25" type = "submit" value="Return to Home">
+            </form>
         </div>
    </body>
 </html>

@@ -18,17 +18,27 @@ def changeFonts(fontFrom, fontTo, tmpdirpath):
     con.commit()
     con.close()
 
+def changeFontSize(fontFrom, fontTo, tmpdirpath):
+    con = sqlite3.connect(os.path.join(tmpdirpath, "temp.db"))
+    cur = con.cursor()
+    print('fontFrom: ', fontFrom, '; fontTo: ', fontTo)
+
+    cur.execute("update button_styles set font_height=" + fontTo + " where font_height=" + fontFrom)
+
+    con.commit()
+    con.close()
+
 def getExport(tmpdirpath):
-    
-    try: 
+
+    try:
         con = sqlite3.connect(os.path.join(tmpdirpath, "temp.db"))
         cur = con.cursor()
-        
-        select = '''Select 
-                        bbc.resource_id,  
-                        r.name AS page_name, 
-                        b.label, b.message 
-                    
+
+        select = '''Select
+                        bbc.resource_id,
+                        r.name AS page_name,
+                        b.label, b.message
+
                     FROM button_box_cells bbc
                         LEFT JOIN buttons b ON b.resource_id = bbc.resource_id
                         LEFT JOIN button_box_instances bbi ON bbi.button_box_id = bbc.button_box_id
@@ -38,15 +48,15 @@ def getExport(tmpdirpath):
                     WHERE b.visible=1
                     ORDER BY page_name
                     LIMIT 10;'''
-        
+
         cur.execute(select)
         csvPath = os.path.join(tmpdirpath, "EditVocabulary.csv")
-        with open(csvPath, 'w',newline='') as csv_file: 
+        with open(csvPath, 'w',newline='') as csv_file:
             csv_writer = csv.writer(csv_file)
-            csv_writer.writerow([i[0] for i in cur.description]) 
+            csv_writer.writerow([i[0] for i in cur.description])
             csv_writer.writerows(cur)
         return csvPath
-        
+
     except:
         print('export failed')
     finally:
@@ -54,7 +64,7 @@ def getExport(tmpdirpath):
 
 
 def importCSV(csvFilePath, tmpdirpath):
-    try: 
+    try:
         con = sqlite3.connect(os.path.join(tmpdirpath, "temp.db"))
         cur = con.cursor()
         # Import csv and extract data
