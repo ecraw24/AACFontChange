@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Change Your Fucking Fonts, Bitch</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="header">
+        <h1>Take down the AAC Capitalists</h1>
+        <hr>
+    </div>
+    <h2>Change Your Fucking Fonts, Bitch</h2>
+    <div class="button_container">
+        <h3>Upload a *.ce file</h3>
+        <form action = "/success" method = "post" enctype="multipart/form-data">  
+            <div class="left">
+                <input type="file" name="file" /><br><br> 
+                <input class = "button-25" type = "submit" value="Upload file"> 
+            </div>  
+        </form> 
+    </div>
+    <div class="return_home">
+        <form action="{{ url_for('index') }}">  
+            <input class = "button-25" type = "submit" value="Return to Home">  
+        </form> 
+    </div>
+</body>
+</html>
