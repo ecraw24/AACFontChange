@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Bulk Edit</title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
@@ -16,6 +17,15 @@
             <form action = "/download" method = "post" enctype="multipart/form-data">  
                 <div class="left">
                     <input type="file" name="file" value="Upload *.ce File"/><br><br> 
+                    <input class = "button-25" type = "submit" name = "UploadCEForPages" value="Upload file">
+                    <p><i>{{alert}}</i></p>
+                    <label for="page">Select which page you want to edit: </label><br><br>
+                    <select name="page" id="page">
+                        {% for page in pages %}
+                        <option>{{ page }}</option>
+                        {% endfor %}
+                    </select>
+                    </select><br><br> 
                     <input class = "button-25" type = "submit" name = "Export" value="Download *.csv spreadsheet"> 
                 </div>        
             </form>

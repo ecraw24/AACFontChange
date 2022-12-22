@@ -81,7 +81,7 @@ def fontChange():
 def download():
   source = list(request.form.keys())[0] #export, import, or font change
 
-  if source == 'Export':
+  if source == 'UploadCEForPages':
     #get file and create tmp dir
     f = request.files['file']
     #save file to directory and extract; if not, cleanup temp folder
@@ -89,7 +89,14 @@ def download():
       FilePath = os.path.join(tmpdirname.name, secure_filename(f.filename))
       f.save(FilePath)
       file_manipulator.extractDB(FilePath, tmpdirname.name)
-      csvPath = sql.getExport(tmpdirname.name)
+      pages = sql.getPages(tmpdirname.name)
+      return render_template('bulkEditHome.html', pages=pages, alert='Upload successful!')
+    except:
+      print('error in uploadCEForPages')
+
+  if ('Export' in list(request.form.keys())):
+    try:
+      csvPath = sql.getExport(tmpdirname.name, request.form['page'] )
       return send_file(csvPath, as_attachment=True)
     except:
       print('extract failed')
